@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riflebird Solana Wallet Connection</title>
+    <style>
+        body {
+            background-color: #333;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Riflebird Solana Wallet Connection</h1>
+    <button onclick="getAccount()">Connect to Phantom Wallet</button>
+    <button onclick="disconnectAccount()">Disconnect</button> 
+    <br><br><br>
+    Account: <span id="user-account">Not connected</span>
+
+    <script>
+        // Function to check Phantom wallet's availability
+        function checkPhantom() {
+            if (window.solana && window.solana.isPhantom) {
+                console.log("Phantom Wallet is available!");
+                document.getElementById("user-account").innerText = "Phantom Wallet detected!";
+            } else {
+                console.log("Phantom Wallet not found.");
+                document.getElementById("user-account").innerText = "Please install Phantom Wallet.";
+            }
+        }
+
+        // Call this function to ensure Phantom is available
+        checkPhantom();
+
+        // Get account function to connect to Phantom Wallet
+        async function getAccount() {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    // Check if wallet is already connected
+                    if (!window.solana.isConnected) {
+                        console.log("Phantom Wallet is not connected. Attempting to connect...");
+                        const response = await window.solana.connect(); // Request connection
+
+                        // After successful connection, display public key
+                        console.log("Connected successfully:", response);
+                        const account = response.publicKey.toString();
+                        document.getElementById("user-account").innerText = account;
+                    } else {
+                        // Wallet is already connected, show the public key
+                        const account = window.solana.publicKey.toString();
+                        console.log("Already connected:", account);
+                        document.getElementById("user-account").innerText = account;
+                    }
+                } catch (err) {
+                    console.error("Error during connection:", err);
+                    document.getElementById("user-account").innerText = "Connection failed!";
+                }
+            } else {
+                console.log("Phantom Wallet is not available in window.solana.");
+                document.getElementById("user-account").innerText = "Phantom Wallet not found.";
+            }
+        }
+
+        // Disconnect account function to log out
+        function disconnectAccount() {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    window.solana.disconnect();  // Disconnect Phantom
+                    console.log("Disconnected from Phantom Wallet");
+                    document.getElementById("user-account").innerText = "Not connected";
+                } catch (err) {
+                    console.error("Error during disconnection:", err);
+                }
+            } else {
+                console.log("Phantom Wallet is not available for disconnection.");
+                document.getElementById("user-account").innerText = "Phantom Wallet not found.";
+            }
+        }
+    </script>
+
+</body>
+</html>
